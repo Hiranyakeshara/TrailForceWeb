@@ -1,4 +1,18 @@
-import { Box, Container, Typography, Stack, Grid, Card, CardContent, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+'use client';
+
+import {
+  Box,
+  Container,
+  Typography,
+  Stack,
+  Card,
+  CardContent,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2'; // ✅ Grid v2
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
 const values = [
@@ -12,13 +26,16 @@ export default function AboutPage() {
   return (
     <Container sx={{ py: { xs: 8, md: 10 } }}>
       <Grid container spacing={3} alignItems="stretch">
-        <Grid item xs={12} md={7}>
+        {/* ✅ Grid2: NO item prop */}
+        <Grid xs={12} md={7}>
           <Stack spacing={2}>
             <Typography variant="h3">About Trailforce</Typography>
+
             <Typography sx={{ opacity: 0.78, fontSize: 18 }}>
               Trailforce designs outdoor adventures for individuals, families, and teams—camping nights,
               hikes, and cycle rides—delivered at trusted routes or at your chosen locations.
             </Typography>
+
             <Typography sx={{ opacity: 0.78 }}>
               We focus on simple, memorable experiences: well-planned routes, safety briefings, and a
               smooth “show up and go” flow. From sunrise rides to overnight camps, we make it easy to
@@ -26,9 +43,11 @@ export default function AboutPage() {
             </Typography>
 
             <Box id="safety" />
+
             <Typography variant="h5" sx={{ mt: 2, fontWeight: 900 }}>
               Safety & Guides
             </Typography>
+
             <Typography sx={{ opacity: 0.78 }}>
               Every trip includes a clear plan, safety briefing, and guide coordination (lead/tail where needed).
               We match routes to your group’s experience level and keep timing, meeting points, and rest stops
@@ -37,12 +56,13 @@ export default function AboutPage() {
           </Stack>
         </Grid>
 
-        <Grid item xs={12} md={5}>
+        <Grid xs={12} md={5}>
           <Card sx={{ height: '100%' }}>
             <CardContent>
               <Typography variant="h6" sx={{ mb: 1.5 }}>
                 What we stand for
               </Typography>
+
               <List dense>
                 {values.map((v) => (
                   <ListItem key={v} disableGutters>

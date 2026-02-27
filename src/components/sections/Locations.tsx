@@ -2,99 +2,156 @@
 
 import * as React from 'react';
 import Link from '@/components/Link';
-
-import {
-  Box,
-  Button,
-  Container,
-  Stack,
-  Typography,
-} from '@mui/material';
-
-import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
-import NorthEastRoundedIcon from '@mui/icons-material/NorthEastRounded';
+import { Box, Button, Chip, Container, Stack, Typography } from '@mui/material';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import NorthEastRoundedIcon from '@mui/icons-material/NorthEastRounded';
+import PlaceRoundedIcon from '@mui/icons-material/PlaceRounded';
+import RouteRoundedIcon from '@mui/icons-material/RouteRounded';
+import ScheduleRoundedIcon from '@mui/icons-material/ScheduleRounded';
+import TerrainRoundedIcon from '@mui/icons-material/TerrainRounded';
 
 import Reveal from '@/components/Reveal';
 
 const ACCENT_GREEN = '#467E30';
 const ACCENT_GOLD = '#FFC107';
 
-type Spot = {
+type RouteItem = {
   id: string;
+  tag: 'Hills' | 'Forest' | 'Coast' | 'Custom';
   title: string;
+  location: string;
   desc: string;
-  note: string;
-  // marker position in SVG viewBox (0..300 x 0..520)
-  x: number;
-  y: number;
+  image: string;
+  meta: {
+    difficulty: 'Easy' | 'Moderate' | 'Challenging';
+    duration: string; // e.g. 2–3 hrs
+    distance: string; // e.g. 18 km
+    elevation: string; // e.g. 620 m
+  };
 };
 
-const SPOTS: Spot[] = [
+const ROUTES: RouteItem[] = [
   {
-    id: 'hill',
-    title: 'Hill Country Trails',
-    desc: 'Cool weather routes with viewpoints, tea country scenery, and ridge walks.',
-    note: 'Nuwara Eliya • Ella • Haputale',
-    x: 170,
-    y: 230,
+    id: 'knuckles',
+    tag: 'Forest',
+    title: 'Forest trek + waterfall swim',
+    location: 'Knuckles • Riverstone',
+    desc: 'Cool shade trails, safe river points, and scenic rest stops — guided pacing included.',
+    image:
+      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=2400&q=70',
+    meta: { difficulty: 'Moderate', duration: '3–4 hrs', distance: '10 km', elevation: '480 m' },
   },
   {
-    id: 'coast',
-    title: 'Coastal Ride Routes',
-    desc: 'Flat-to-gentle rides with sunrise/sunset options and photo stops.',
-    note: 'Negombo • Bentota • Galle',
-    x: 145,
-    y: 395,
+    id: 'ella',
+    tag: 'Hills',
+    title: 'Hill viewpoint sunrise walk',
+    location: 'Ella • Ridge route',
+    desc: 'Short climbs, big views — perfect for teams and small groups.',
+    image:
+      'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=2400&q=70',
+    meta: { difficulty: 'Easy', duration: '2–3 hrs', distance: '7 km', elevation: '350 m' },
   },
   {
-    id: 'forest',
-    title: 'Forest & Waterfall Areas',
-    desc: 'Guided treks through greenery with careful pacing and safe resting points.',
-    note: 'Kithulgala • Knuckles',
-    x: 205,
-    y: 270,
+    id: 'coast-ride',
+    tag: 'Coast',
+    title: 'Coastal cycle ride + photo stops',
+    location: 'Negombo • Bentota',
+    desc: 'Flat-to-gentle ride with sunrise/sunset options, safety lead/tail, and hydration breaks.',
+    image:
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2400&q=70',
+    meta: { difficulty: 'Easy', duration: '2–3 hrs', distance: '18 km', elevation: '40 m' },
+  },
+  {
+    id: 'kithulgala',
+    tag: 'Forest',
+    title: 'Rainforest trail + river experience',
+    location: 'Kithulgala • Green belt',
+    desc: 'A lush guided route with safety briefing and route feasibility checks.',
+    image:
+      'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=2400&q=70',
+    meta: { difficulty: 'Moderate', duration: '3–5 hrs', distance: '12 km', elevation: '520 m' },
   },
   {
     id: 'custom',
-    title: 'Your Preferred Location',
-    desc: 'Tell us your goals—we’ll validate safety and design the plan.',
-    note: 'Anywhere in Sri Lanka',
-    x: 130,
-    y: 455,
+    tag: 'Custom',
+    title: 'Your preferred location (we design it)',
+    location: 'Anywhere in Sri Lanka',
+    desc: 'Share your location + goals — we’ll validate safety, plan the route, and deliver the experience.',
+    image:
+      'https://images.unsplash.com/photo-1526481280695-3c687fd643ed?auto=format&fit=crop&w=2400&q=70',
+    meta: { difficulty: 'Easy', duration: 'Flexible', distance: 'Flexible', elevation: 'Flexible' },
   },
 ];
 
+const TAGS: RouteItem['tag'][] = ['Hills', 'Forest', 'Coast', 'Custom'];
+
 export default function WhereWeGo() {
-  const [active, setActive] = React.useState<string>(SPOTS[0].id);
+  const [tag, setTag] = React.useState<RouteItem['tag']>('Forest');
+  const filtered = React.useMemo(() => ROUTES.filter((r) => r.tag === tag), [tag]);
+  const [activeId, setActiveId] = React.useState(filtered[0]?.id ?? ROUTES[0].id);
+
+  // keep active inside filtered list
+  React.useEffect(() => {
+    if (!filtered.some((r) => r.id === activeId)) {
+      setActiveId(filtered[0]?.id ?? ROUTES[0].id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tag]);
+
+  const active = React.useMemo(
+    () => ROUTES.find((r) => r.id === activeId) ?? ROUTES[0],
+    [activeId]
+  );
 
   return (
     <Box
       id="where"
       sx={{
+        position: 'relative',
+        overflow: 'hidden',
         py: { xs: 7, md: 10 },
         bgcolor: '#070B08',
         borderTop: '1px solid rgba(255,255,255,0.06)',
         borderBottom: '1px solid rgba(255,255,255,0.06)',
+        '&:before': {
+          content: '""',
+          position: 'absolute',
+          inset: 0,
+          background:
+            'radial-gradient(900px 520px at 18% 10%, rgba(70,126,48,0.20) 0%, rgba(70,126,48,0) 55%), radial-gradient(900px 520px at 88% 24%, rgba(255,193,7,0.10) 0%, rgba(255,193,7,0) 55%), linear-gradient(180deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.82) 60%, rgba(0,0,0,0.90) 100%)',
+          opacity: 1,
+          zIndex: 0,
+        },
+        '&:after': {
+          content: '""',
+          position: 'absolute',
+          inset: 0,
+          backgroundImage:
+            'linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)',
+          backgroundSize: '64px 64px',
+          opacity: 0.06,
+          zIndex: 0,
+          pointerEvents: 'none',
+        },
       }}
     >
-      <Container>
+      <Container sx={{ position: 'relative', zIndex: 1 }}>
         <Box
           sx={{
             display: 'grid',
             gridTemplateColumns: { xs: '1fr', md: '1.05fr 0.95fr' },
-            gap: { xs: 4, md: 5 },
+            gap: { xs: 3.5, md: 5 },
             alignItems: 'start',
           }}
         >
-          {/* LEFT: content */}
+          {/* LEFT: content + selector */}
           <Reveal>
             <Box>
               <Typography
                 sx={{
                   color: 'rgba(255,255,255,0.92)',
                   fontWeight: 950,
-                  fontSize: { xs: 34, md: 44 },
+                  fontSize: { xs: 34, md: 46 },
                   letterSpacing: '-0.02em',
                   fontFamily: 'var(--font-oswald), var(--font-montserrat), Inter, sans-serif',
                 }}
@@ -111,9 +168,46 @@ export default function WhereWeGo() {
                   fontSize: { xs: 14.5, md: 16 },
                 }}
               >
-                We can host adventures on popular trails—or design an experience at your preferred
-                location after a quick safety and feasibility check.
+                Pick a vibe — we’ll handle planning, safety checks, route guidance, and the full experience.
               </Typography>
+
+              {/* Tag selector */}
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                  mt: 2.2,
+                  flexWrap: 'wrap',
+                  rowGap: 1,
+                }}
+              >
+                {TAGS.map((t) => {
+                  const on = t === tag;
+                  return (
+                    <Button
+                      key={t}
+                      onClick={() => setTag(t)}
+                      variant={on ? 'contained' : 'outlined'}
+                      sx={{
+                        borderRadius: 2, // ✅ less rounded
+                        px: 1.6,
+                        py: 0.9,
+                        fontWeight: 950,
+                        textTransform: 'none',
+                        borderColor: on ? 'transparent' : 'rgba(255,255,255,0.16)',
+                        color: on ? '#0B0F0C' : 'rgba(255,255,255,0.78)',
+                        bgcolor: on ? ACCENT_GOLD : 'rgba(255,255,255,0.03)',
+                        '&:hover': {
+                          bgcolor: on ? 'rgba(255,193,7,0.92)' : 'rgba(255,255,255,0.06)',
+                          borderColor: on ? 'transparent' : 'rgba(255,255,255,0.24)',
+                        },
+                      }}
+                    >
+                      {t}
+                    </Button>
+                  );
+                })}
+              </Stack>
 
               <Stack direction="row" spacing={1.2} sx={{ mt: 2.2 }}>
                 <Button
@@ -122,64 +216,66 @@ export default function WhereWeGo() {
                   variant="outlined"
                   endIcon={<NorthEastRoundedIcon />}
                   sx={{
-                    borderRadius: 999,
-                    borderColor: 'rgba(70,126,48,0.55)',
-                    color: ACCENT_GREEN,
-                    px: 2.2,
+                    borderRadius: 2,
+                    borderColor: 'rgba(70,126,48,0.65)',
+                    color: 'rgba(255,255,255,0.86)',
+                    px: 2.0,
                     py: 1,
-                    fontWeight: 900,
+                    fontWeight: 950,
                     textTransform: 'none',
-                    '&:hover': {
-                      borderColor: 'rgba(70,126,48,0.85)',
-                      bgcolor: 'rgba(70,126,48,0.08)',
-                    },
+                    '&:hover': { bgcolor: 'rgba(70,126,48,0.10)', borderColor: 'rgba(70,126,48,0.95)' },
                   }}
                 >
-                  View all locations
+                  Explore locations
+                </Button>
+
+                <Button
+                  component={Link}
+                  href="/contact"
+                  variant="contained"
+                  sx={{
+                    borderRadius: 2,
+                    bgcolor: ACCENT_GREEN,
+                    px: 2.0,
+                    py: 1,
+                    fontWeight: 950,
+                    textTransform: 'none',
+                    '&:hover': { bgcolor: 'rgba(70,126,48,0.92)' },
+                  }}
+                >
+                  Request a plan
                 </Button>
               </Stack>
 
-              {/* LIST */}
-              <Stack spacing={1.8} sx={{ mt: 3.2 }}>
-                {SPOTS.map((s) => {
-                  const isOn = active === s.id;
+              {/* Compact list of cards (click to update featured) */}
+              <Stack spacing={1.2} sx={{ mt: 3 }}>
+                {filtered.map((r) => {
+                  const on = r.id === activeId;
                   return (
                     <Box
-                      key={s.id}
-                      onMouseEnter={() => setActive(s.id)}
-                      onFocus={() => setActive(s.id)}
-                      tabIndex={0}
+                      key={r.id}
+                      onClick={() => setActiveId(r.id)}
                       role="button"
+                      tabIndex={0}
                       sx={{
-                        p: { xs: 2, md: 2.2 },
-                        borderRadius: 3, // ✅ reduced corners (theme match)
-                        border: '1px solid rgba(255,255,255,0.09)',
-                        background:
-                          isOn
-                            ? 'linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.025) 100%)'
-                            : 'linear-gradient(180deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.018) 100%)',
-                        boxShadow: isOn
-                          ? '0 22px 60px rgba(0,0,0,0.55)'
-                          : '0 14px 40px rgba(0,0,0,0.42)',
-                        transition: 'transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease',
+                        p: { xs: 1.6, md: 1.8 },
+                        borderRadius: 2, // ✅ less rounded
+                        border: on ? '1px solid rgba(255,193,7,0.38)' : '1px solid rgba(255,255,255,0.10)',
+                        background: on ? 'rgba(255,193,7,0.06)' : 'rgba(0,0,0,0.26)',
+                        backdropFilter: 'blur(10px)',
                         cursor: 'pointer',
+                        transition: 'transform 160ms ease, border-color 160ms ease, background 160ms ease',
+                        '&:hover': { transform: 'translateY(-2px)', borderColor: 'rgba(255,193,7,0.48)' },
                         outline: 'none',
-                        '&:hover': {
-                          transform: 'translateY(-2px)',
-                          borderColor: 'rgba(70,126,48,0.45)',
-                        },
-                        '&:focus-visible': {
-                          borderColor: 'rgba(255,193,7,0.55)',
-                          boxShadow: '0 0 0 4px rgba(255,193,7,0.10)',
-                        },
+                        '&:focus-visible': { boxShadow: '0 0 0 4px rgba(255,193,7,0.12)' },
                       }}
                     >
                       <Stack direction="row" spacing={1.2} alignItems="flex-start">
                         <Box
                           sx={{
-                            width: 34,
-                            height: 34,
-                            borderRadius: 2,
+                            width: 36,
+                            height: 36,
+                            borderRadius: 1.8,
                             display: 'grid',
                             placeItems: 'center',
                             bgcolor: 'rgba(255,193,7,0.14)',
@@ -188,46 +284,23 @@ export default function WhereWeGo() {
                             mt: 0.2,
                           }}
                         >
-                          <LocationOnRoundedIcon sx={{ color: ACCENT_GOLD, fontSize: 20 }} />
+                          <PlaceRoundedIcon sx={{ color: ACCENT_GOLD, fontSize: 20 }} />
                         </Box>
 
                         <Box sx={{ minWidth: 0 }}>
                           <Stack direction="row" spacing={1} alignItems="center">
-                            <Typography
-                              sx={{
-                                color: 'rgba(255,255,255,0.92)',
-                                fontWeight: 950,
-                                fontSize: { xs: 18, md: 20 },
-                                letterSpacing: '-0.01em',
-                              }}
-                            >
-                              {s.title}
+                            <Typography sx={{ color: 'rgba(255,255,255,0.92)', fontWeight: 950, fontSize: 16 }}>
+                              {r.title}
                             </Typography>
-
-                            {isOn && (
-                              <CheckCircleRoundedIcon sx={{ color: ACCENT_GREEN, fontSize: 18, opacity: 0.95 }} />
-                            )}
+                            {on && <CheckCircleRoundedIcon sx={{ color: ACCENT_GREEN, fontSize: 18 }} />}
                           </Stack>
 
-                          <Typography
-                            sx={{
-                              mt: 0.7,
-                              color: 'rgba(255,255,255,0.62)',
-                              lineHeight: 1.6,
-                              fontSize: { xs: 13.8, md: 14.8 },
-                            }}
-                          >
-                            {s.desc}
+                          <Typography sx={{ mt: 0.3, color: 'rgba(255,255,255,0.60)', fontSize: 13.5, lineHeight: 1.5 }}>
+                            {r.location}
                           </Typography>
 
-                          <Typography
-                            sx={{
-                              mt: 0.9,
-                              color: 'rgba(255,255,255,0.48)',
-                              fontSize: 13,
-                            }}
-                          >
-                            {s.note}
+                          <Typography sx={{ mt: 0.6, color: 'rgba(255,255,255,0.52)', fontSize: 13.5, lineHeight: 1.55 }}>
+                            {r.desc}
                           </Typography>
                         </Box>
                       </Stack>
@@ -238,71 +311,143 @@ export default function WhereWeGo() {
             </Box>
           </Reveal>
 
-          {/* RIGHT: Sri Lanka map */}
+          {/* RIGHT: Featured image card (big visual) */}
           <Reveal>
             <Box
               sx={{
                 position: 'relative',
-                borderRadius: 4,
-                border: '1px solid rgba(255,255,255,0.08)',
-                background:
-                  'radial-gradient(900px 520px at 30% 10%, rgba(70,126,48,0.18) 0%, rgba(70,126,48,0) 55%), radial-gradient(900px 520px at 85% 30%, rgba(255,193,7,0.14) 0%, rgba(255,193,7,0) 55%), linear-gradient(180deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.015) 100%)',
-                boxShadow: '0 26px 80px rgba(0,0,0,0.55)',
+                borderRadius: 2.5, // ✅ modern, not too round
                 overflow: 'hidden',
+                border: '1px solid rgba(255,255,255,0.10)',
+                boxShadow: '0 28px 90px rgba(0,0,0,0.58)',
                 minHeight: { xs: 420, md: 520 },
               }}
             >
-              {/* glow corners */}
+              {/* image */}
               <Box
+                key={active.id}
                 sx={{
                   position: 'absolute',
                   inset: 0,
-                  pointerEvents: 'none',
-                  background:
-                    'radial-gradient(420px 240px at 20% 10%, rgba(70,126,48,0.14) 0%, rgba(70,126,48,0) 60%)',
+                  backgroundImage: `url('${active.image}')`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  filter: 'saturate(1.05)',
+                  transform: 'scale(1.04)',
                 }}
               />
 
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 14,
-                  left: 16,
-                  right: 16,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  zIndex: 2,
-                }}
-              >
-                <Typography
-                  sx={{
-                    color: 'rgba(255,255,255,0.86)',
-                    fontWeight: 950,
-                    letterSpacing: '0.02em',
-                    fontSize: 13,
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  Sri Lanka map
-                </Typography>
-
-                <Typography sx={{ color: 'rgba(255,255,255,0.55)', fontSize: 13 }}>
-                  Hover a card to highlight
-                </Typography>
-              </Box>
-
-              {/* SVG Map */}
+              {/* overlay */}
               <Box
                 sx={{
                   position: 'absolute',
                   inset: 0,
-                  display: 'grid',
-                  placeItems: 'center',
-                  pt: 2,
+                  background:
+                    'linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.62) 55%, rgba(0,0,0,0.86) 100%)',
+                }}
+              />
+
+              {/* top badges */}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 16,
+                  left: 16,
+                  right: 16,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  gap: 1,
+                  zIndex: 2,
                 }}
               >
-                <SriLankaMap active={active} onPick={setActive} />
+                <Chip
+                  label={active.tag}
+                  size="small"
+                  sx={{
+                    borderRadius: 2,
+                    bgcolor: 'rgba(255,255,255,0.12)',
+                    color: 'rgba(255,255,255,0.86)',
+                    border: '1px solid rgba(255,255,255,0.18)',
+                    fontWeight: 900,
+                  }}
+                />
+
+                <Chip
+                  label={active.meta.difficulty}
+                  size="small"
+                  sx={{
+                    borderRadius: 2,
+                    bgcolor: 'rgba(255,193,7,0.14)',
+                    color: 'rgba(255,255,255,0.90)',
+                    border: '1px solid rgba(255,193,7,0.22)',
+                    fontWeight: 950,
+                  }}
+                />
+              </Box>
+
+              {/* bottom content */}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  left: 16,
+                  right: 16,
+                  bottom: 16,
+                  zIndex: 2,
+                  borderRadius: 2,
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  bgcolor: 'rgba(0,0,0,0.40)',
+                  backdropFilter: 'blur(12px)',
+                  p: { xs: 1.6, md: 1.8 },
+                }}
+              >
+                <Typography sx={{ color: 'rgba(255,255,255,0.94)', fontWeight: 950, fontSize: { xs: 20, md: 22 } }}>
+                  {active.title}
+                </Typography>
+
+                <Typography sx={{ mt: 0.5, color: 'rgba(255,255,255,0.70)', fontSize: 14 }}>
+                  {active.location}
+                </Typography>
+
+                <Stack direction="row" spacing={1.2} sx={{ mt: 1.2, flexWrap: 'wrap', rowGap: 1 }}>
+                  <MetaPill icon={<ScheduleRoundedIcon />} label={active.meta.duration} />
+                  <MetaPill icon={<RouteRoundedIcon />} label={active.meta.distance} />
+                  <MetaPill icon={<TerrainRoundedIcon />} label={active.meta.elevation} />
+                </Stack>
+
+                <Stack direction="row" spacing={1.2} sx={{ mt: 1.4 }}>
+                  <Button
+                    component={Link}
+                    href="/contact"
+                    variant="contained"
+                    size="small"
+                    sx={{
+                      borderRadius: 2,
+                      bgcolor: ACCENT_GREEN,
+                      fontWeight: 950,
+                      textTransform: 'none',
+                      '&:hover': { bgcolor: 'rgba(70,126,48,0.92)' },
+                    }}
+                  >
+                    Request this route
+                  </Button>
+
+                  <Button
+                    component={Link}
+                    href="/locations"
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                      borderRadius: 2,
+                      borderColor: 'rgba(255,255,255,0.18)',
+                      color: 'rgba(255,255,255,0.86)',
+                      fontWeight: 950,
+                      textTransform: 'none',
+                      '&:hover': { borderColor: 'rgba(255,255,255,0.30)', bgcolor: 'rgba(255,255,255,0.06)' },
+                    }}
+                  >
+                    View all
+                  </Button>
+                </Stack>
               </Box>
             </Box>
           </Reveal>
@@ -312,125 +457,25 @@ export default function WhereWeGo() {
   );
 }
 
-/** Stylized Sri Lanka silhouette + markers (no external assets) */
-function SriLankaMap({
-  active,
-  onPick,
-}: {
-  active: string;
-  onPick: (id: string) => void;
-}) {
-  // simple pulse animation
-  const pulse = {
-    '@keyframes tfPulse': {
-      '0%': { transform: 'scale(1)', opacity: 0.35 },
-      '70%': { transform: 'scale(2.1)', opacity: 0 },
-      '100%': { transform: 'scale(2.1)', opacity: 0 },
-    },
-  } as const;
-
+function MetaPill({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <Box sx={{ width: 'min(420px, 92%)', ...pulse }}>
-      <svg viewBox="0 0 300 520" width="100%" height="100%" style={{ display: 'block' }}>
-        {/* silhouette (stylized) */}
-        <defs>
-          <linearGradient id="tfFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.12)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0.05)" />
-          </linearGradient>
-          <linearGradient id="tfStroke" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="rgba(70,126,48,0.55)" />
-            <stop offset="100%" stopColor="rgba(255,193,7,0.28)" />
-          </linearGradient>
-        </defs>
-
-        <path
-          d="
-            M160 18
-            C198 26, 226 48, 238 78
-            C248 104, 240 130, 252 156
-            C267 188, 287 224, 268 260
-            C254 286, 245 306, 246 334
-            C247 368, 252 390, 239 418
-            C223 452, 200 474, 172 494
-            C150 510, 130 506, 118 488
-            C103 466, 94 448, 78 426
-            C60 400, 44 374, 48 340
-            C52 302, 70 278, 72 250
-            C74 220, 56 190, 72 160
-            C86 132, 82 106, 96 80
-            C114 46, 128 26, 160 18
-            Z
-          "
-          fill="url(#tfFill)"
-          stroke="url(#tfStroke)"
-          strokeWidth="2"
-        />
-
-        {/* subtle inner shadow */}
-        <path
-          d="
-            M160 34
-            C192 40, 212 58, 221 82
-            C229 104, 223 124, 232 148
-            C244 180, 260 214, 246 244
-            C235 266, 228 286, 229 312
-            C230 342, 234 362, 224 386
-            C211 416, 192 436, 168 454
-            C150 468, 136 464, 126 448
-            C114 430, 106 416, 94 396
-            C80 372, 68 348, 71 318
-            C74 284, 88 264, 89 238
-            C90 210, 76 182, 87 156
-            C97 132, 94 110, 106 88
-            C120 60, 132 42, 160 34
-            Z
-          "
-          fill="rgba(0,0,0,0.20)"
-          opacity="0.18"
-        />
-
-        {/* markers */}
-        {SPOTS.map((s) => {
-          const isOn = active === s.id;
-          return (
-            <g
-              key={s.id}
-              onMouseEnter={() => onPick(s.id)}
-              onClick={() => onPick(s.id)}
-              style={{ cursor: 'pointer' }}
-            >
-              {/* pulse ring */}
-              {isOn && (
-                <circle
-                  cx={s.x}
-                  cy={s.y}
-                  r="10"
-                  fill="rgba(255,193,7,0.18)"
-                  style={{ transformOrigin: `${s.x}px ${s.y}px`, animation: 'tfPulse 1.4s ease-out infinite' }}
-                />
-              )}
-              <circle
-                cx={s.x}
-                cy={s.y}
-                r={isOn ? 7.5 : 6}
-                fill={isOn ? ACCENT_GOLD : 'rgba(255,193,7,0.75)'}
-                stroke={isOn ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.25)'}
-                strokeWidth="2"
-              />
-              <circle cx={s.x} cy={s.y} r="2.2" fill="rgba(0,0,0,0.35)" />
-            </g>
-          );
-        })}
-      </svg>
-
-      {/* legend */}
-      <Stack direction="row" spacing={1} sx={{ mt: 1.2, justifyContent: 'center', opacity: 0.85 }}>
-        <Box sx={{ width: 10, height: 10, borderRadius: 999, bgcolor: ACCENT_GOLD }} />
-        <Typography sx={{ color: 'rgba(255,255,255,0.62)', fontSize: 12.5 }}>
-          Hotspots • curated routes
-        </Typography>
-      </Stack>
-    </Box>
+    <Stack
+      direction="row"
+      spacing={0.8}
+      alignItems="center"
+      sx={{
+        px: 1.1,
+        py: 0.7,
+        borderRadius: 2,
+        bgcolor: 'rgba(255,255,255,0.10)',
+        border: '1px solid rgba(255,255,255,0.14)',
+        color: 'rgba(255,255,255,0.86)',
+        fontWeight: 850,
+        fontSize: 13,
+      }}
+    >
+      <Box sx={{ opacity: 0.92, '& svg': { fontSize: 18 } }}>{icon}</Box>
+      <Box component="span">{label}</Box>
+    </Stack>
   );
 }
