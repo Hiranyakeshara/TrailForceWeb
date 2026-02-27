@@ -1,4 +1,4 @@
-import { Container, Typography, Stack, Grid, Card, CardContent, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, Container, Typography, Stack, Grid, Card, CardContent, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
 const values = [
@@ -23,6 +23,16 @@ export default function AboutPage() {
               We focus on simple, memorable experiences: well-planned routes, safety briefings, and a
               smooth “show up and go” flow. From sunrise rides to overnight camps, we make it easy to
               get outside.
+            </Typography>
+
+            <Box id="safety" />
+            <Typography variant="h5" sx={{ mt: 2, fontWeight: 900 }}>
+              Safety & Guides
+            </Typography>
+            <Typography sx={{ opacity: 0.78 }}>
+              Every trip includes a clear plan, safety briefing, and guide coordination (lead/tail where needed).
+              We match routes to your group’s experience level and keep timing, meeting points, and rest stops
+              simple and predictable.
             </Typography>
           </Stack>
         </Grid>

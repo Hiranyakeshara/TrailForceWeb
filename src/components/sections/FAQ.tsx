@@ -16,7 +16,7 @@ import { faqs } from '@/components/data';
 
 export default function FAQ() {
   return (
-    <Box sx={{ py: { xs: 7, md: 9 }, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+    <Box id="faq" sx={{ py: { xs: 7, md: 9 }, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
       <Container>
         <Reveal>
           <Stack spacing={1} sx={{ mb: 3 }}>

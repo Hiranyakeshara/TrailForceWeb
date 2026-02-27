@@ -5,7 +5,8 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     mode: 'dark',
-    primary: { main: '#4CAF50' },      // trail green
+    // Forest green (close to the competitor's menu accent color)
+    primary: { main: '#467E30' },
     secondary: { main: '#FFB300' },    // sunrise amber
     background: {
       default: '#0B0F0C',

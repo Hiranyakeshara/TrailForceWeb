@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Montserrat } from 'next/font/google';
+import { Montserrat, Oswald } from 'next/font/google';
 
 import theme from '@/theme';
 import TopNav from '@/components/TopNav';
@@ -17,6 +17,13 @@ const montserrat = Montserrat({
   variable: '--font-montserrat',
 });
 
+const oswald = Oswald({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-oswald',
+});
+
 export const metadata: Metadata = {
   title: 'Trailforce | Adventure experiences, anywhere',
   description:
@@ -24,7 +31,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={montserrat.variable}>
+    <html lang="en" className={`${montserrat.variable} ${oswald.variable}`}>
       <body>
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>

@@ -1,156 +1,232 @@
 'use client';
 
-import Link from '@/components/Link';
+import * as React from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import Link from '@/components/Link';
+import { AnimatePresence, motion } from 'framer-motion';
 
-import {
-  Box,
-  Button,
-  Chip,
-  Container,
-  Grid,
-  Stack,
-  Typography,
-} from '@mui/material';
-import NorthEastRoundedIcon from '@mui/icons-material/NorthEastRounded';
-import PlaceRoundedIcon from '@mui/icons-material/PlaceRounded';
-import VerifiedUserRoundedIcon from '@mui/icons-material/VerifiedUserRounded';
+import { Box, Button, Container, Stack, Typography } from '@mui/material';
 
-import { stats, heroImages } from '@/components/data';
+const slides = [
+  // Forest / lake vibe (similar feel to the reference)
+  'https://images.unsplash.com/photo-1458668383970-8ddd3927deed?auto=format&fit=crop&w=2400&q=70',
+  // Hike ridge
+  'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2400&q=70',
+  // Cycling trail
+  'https://images.unsplash.com/photo-1520975958225-4a5dfc59c0b7?auto=format&fit=crop&w=2400&q=70',
+];
 
 const MotionBox = motion(Box);
 
 export default function Hero() {
+  const [idx, setIdx] = React.useState(0);
+
+  React.useEffect(() => {
+    const t = window.setInterval(() => setIdx((v) => (v + 1) % slides.length), 8000);
+    return () => window.clearInterval(t);
+  }, []);
+
   return (
     <Box
       sx={{
         position: 'relative',
         overflow: 'hidden',
-        minHeight: { xs: '86vh', md: '92vh' },
-        display: 'flex',
-        alignItems: 'center',
-        borderBottom: '1px solid rgba(255,255,255,0.08)',
+        minHeight: { xs: '92vh', md: '96vh' },
+        display: 'grid',
+        placeItems: 'center',
+        // Pull under the sticky navbar so the image sits behind it (like your reference)
+        mt: { xs: '-64px', md: '-74px' },
+        pt: { xs: '64px', md: '74px' },
       }}
     >
-      {/* Background image */}
-      <MotionBox
-        aria-hidden
-        initial={{ scale: 1.06 }}
-        animate={{ scale: 1.0 }}
-        transition={{ duration: 10, ease: 'easeOut' }}
-        sx={{ position: 'absolute', inset: 0 }}
-      >
-        <Image
-          src={heroImages.hero}
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          style={{ objectFit: 'cover', filter: 'saturate(1.05) contrast(1.05)' }}
+      {/* Background slider */}
+      <Box sx={{ position: 'absolute', inset: 0 }} aria-hidden>
+        <AnimatePresence mode="wait">
+          <MotionBox
+            key={idx}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            sx={{ position: 'absolute', inset: 0 }}
+          >
+            <Image
+              src={slides[idx]}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              style={{ objectFit: 'cover' }}
+            />
+          </MotionBox>
+        </AnimatePresence>
+
+        {/* Dark overlay (same mood as reference) */}
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            background:
+              'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.70) 100%)',
+          }}
         />
-        <Box sx={{ position: 'absolute', inset: 0, background: 'var(--hero-overlay)' }} />
-      </MotionBox>
+      </Box>
 
-      <Container sx={{ position: 'relative', py: { xs: 8, md: 10 } }}>
-        <Grid container spacing={4} alignItems="center">
-          <Grid item xs={12} md={7}>
-            <Stack spacing={2.2}>
-              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-                <Chip icon={<PlaceRoundedIcon />} label="Your location, your adventure" />
-                <Chip icon={<VerifiedUserRoundedIcon />} label="Safety-first planning" color="secondary" />
-              </Stack>
+      {/* Right-side slide dots */}
+      <Stack
+        spacing={1.2}
+        sx={{
+          position: 'absolute',
+          // Mobile: keep dots away from text (bottom-center + horizontal)
+          left: { xs: '50%', sm: 'auto' },
+          right: { xs: 'auto', sm: 14, md: 24 },
+          bottom: { xs: 160, sm: 'auto' },
+          top: { xs: 'auto', sm: '50%' },
+          transform: { xs: 'translateX(-50%)', sm: 'translateY(-50%)' },
+          flexDirection: { xs: 'row', sm: 'column' },
+          zIndex: 3,
+        }}
+        aria-label="Hero slides"
+      >
+        {slides.map((_, i) => (
+          <Box
+            key={i}
+            onClick={() => setIdx(i)}
+            role="button"
+            tabIndex={0}
+            sx={{
+              width: { xs: 8, sm: 10 },
+              height: { xs: 8, sm: 10 },
+              borderRadius: 999,
+              border: '1px solid rgba(255,255,255,0.85)',
+              bgcolor: i === idx ? 'rgba(255,255,255,0.85)' : 'transparent',
+              cursor: 'pointer',
+              outline: 'none',
+              opacity: 0.95,
+              '&:hover': { transform: 'scale(1.08)' },
+              transition: 'transform 120ms ease',
+            }}
+          />
+        ))}
+      </Stack>
 
-              <MotionBox
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: 'easeOut' }}
-              >
-                <Typography variant="h1" sx={{ fontSize: { xs: 40, md: 64 }, lineHeight: 1.0 }}>
-                  Adventure experiences,
-                  <br />
-                  delivered anywhere.
-                </Typography>
-              </MotionBox>
-
-              <Typography sx={{ opacity: 0.82, fontSize: { xs: 16, md: 18 }, maxWidth: 620 }}>
-                Trailforce offers guided <b>camping</b>, <b>hikes</b>, and <b>cycle rides</b> for individuals,
-                families, and teams—at trusted routes or your preferred location.
-              </Typography>
-
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2} alignItems={{ xs: 'stretch', sm: 'center' }}>
-                <Button
-                  component={Link}
-                  href="/contact"
-                  variant="contained"
-                  size="large"
-                  endIcon={<NorthEastRoundedIcon />}
-                >
-                  Plan my adventure
-                </Button>
-                <Button component={Link} href="/adventures" variant="outlined" size="large">
-                  Explore packages
-                </Button>
-              </Stack>
-
-              <Grid container spacing={1.6} sx={{ mt: 1 }}>
-                {stats.map((s) => (
-                  <Grid key={s.label} item xs={12} sm={4}>
-                    <Box
-                      sx={{
-                        p: 2,
-                        borderRadius: 4,
-                        border: '1px solid rgba(255,255,255,0.10)',
-                        bgcolor: 'rgba(0,0,0,0.25)',
-                        backdropFilter: 'blur(10px)',
-                      }}
-                    >
-                      <Typography sx={{ fontWeight: 900, fontSize: 22 }}>{s.kpi}</Typography>
-                      <Typography variant="body2" sx={{ opacity: 0.75 }}>
-                        {s.label}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
-            </Stack>
-          </Grid>
-
-          <Grid item xs={12} md={5}>
-            <Box
+      {/* Center content */}
+      <Container sx={{ position: 'relative', zIndex: 2 }}>
+        <Stack
+          spacing={2}
+          alignItems="center"
+          textAlign="center"
+          sx={{
+            maxWidth: 980,
+            mx: 'auto',
+            pb: { xs: 8, md: 10 },
+          }}
+        >
+          <MotionBox
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+          >
+            <Typography
+              component="h1"
               sx={{
-                display: { xs: 'none', md: 'block' },
-                p: 3,
-                borderRadius: 6,
-                bgcolor: 'rgba(17, 24, 19, 0.55)',
-                border: '1px solid rgba(255,255,255,0.10)',
-                backdropFilter: 'blur(14px)',
+                fontFamily: 'var(--font-oswald), Inter, sans-serif',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                fontWeight: 700,
+                lineHeight: 1.05,
+                color: 'white',
+                textShadow: '0 10px 30px rgba(0,0,0,0.55)',
+                // Slightly smaller on mobile so it doesn't feel cramped
+                fontSize: { xs: 30, sm: 44, md: 68 },
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 900, mb: 1 }}>
-                What you get
-              </Typography>
-              <Typography sx={{ opacity: 0.78 }}>
-                • Route planning + difficulty match
-                <br />• Guide lead/tail & safety briefing
-                <br />• Optional gear support (package-based)
-                <br />• Clear timing + meeting points
-                <br />• Photos-friendly stops
-              </Typography>
+              Sri Lanka’s adventure base
+              <br />
+              for camping, hikes & cycle rides
+            </Typography>
+          </MotionBox>
 
-              <Typography variant="h6" sx={{ fontWeight: 900, mt: 3, mb: 1 }}>
-                Perfect for
-              </Typography>
-              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-                <Chip label="Friends" />
-                <Chip label="Families" />
-                <Chip label="Couples" />
-                <Chip label="Corporate teams" color="secondary" />
-              </Stack>
-            </Box>
-          </Grid>
-        </Grid>
+          <Typography
+            sx={{
+              color: 'rgba(255,255,255,0.85)',
+              fontSize: { xs: 15, md: 18 },
+              textShadow: '0 8px 22px rgba(0,0,0,0.45)',
+              maxWidth: 760,
+            }}
+          >
+            Plan, ride, trek, and camp — guided experiences designed for your group and delivered at trusted routes
+            or your preferred location.
+          </Typography>
+
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2} sx={{ pt: 1 }}>
+            <Button
+              component={Link}
+              href="/adventures"
+              variant="outlined"
+              sx={{
+                borderRadius: 0,
+                borderColor: 'rgba(255,255,255,0.70)',
+                color: 'white',
+                px: 3,
+                py: 1.2,
+                minWidth: { xs: 240, sm: 'auto' },
+                fontFamily: 'var(--font-oswald), Inter, sans-serif',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                '&:hover': { borderColor: 'rgba(255,255,255,0.95)', bgcolor: 'rgba(255,255,255,0.10)' },
+              }}
+            >
+              Explore services
+            </Button>
+            <Button
+              component={Link}
+              href="/contact"
+              variant="outlined"
+              sx={{
+                borderRadius: 0,
+                borderColor: 'rgba(255,255,255,0.70)',
+                color: 'white',
+                px: 3,
+                py: 1.2,
+                minWidth: { xs: 240, sm: 'auto' },
+                fontFamily: 'var(--font-oswald), Inter, sans-serif',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                '&:hover': { borderColor: 'rgba(255,255,255,0.95)', bgcolor: 'rgba(255,255,255,0.10)' },
+              }}
+            >
+              Request a quote
+            </Button>
+          </Stack>
+        </Stack>
       </Container>
+
+      {/* Bottom wave */}
+      <Box
+        aria-hidden
+        sx={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: -1,
+          height: { xs: 70, md: 120 },
+          zIndex: 2,
+          pointerEvents: 'none',
+        }}
+      >
+        <svg
+          viewBox="0 0 1440 320"
+          preserveAspectRatio="none"
+          width="100%"
+          height="100%"
+        >
+          <path
+            fill="#0B0F0C"
+            d="M0,256L60,250.7C120,245,240,235,360,218.7C480,203,600,181,720,186.7C840,192,960,224,1080,229.3C1200,235,1320,213,1380,202.7L1440,192L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"
+          />
+        </svg>
+      </Box>
     </Box>
   );
 }
