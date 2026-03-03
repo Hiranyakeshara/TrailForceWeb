@@ -1,4 +1,5 @@
-import { Box, Container, Typography, Stack, Grid, Card, CardContent, Chip, Divider } from '@mui/material';
+import { Box, Container, Typography, Stack,  Card, CardContent, Chip, Divider } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import { adventures } from '@/components/data';
 
 const scrollAnchorSx = { scrollMarginTop: { xs: 84, md: 94 } };

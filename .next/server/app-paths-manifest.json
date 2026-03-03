@@ -1,1 +1,9 @@
-{}
+{
+  "/api/contact/route": "app/api/contact/route.js",
+  "/about/page": "app/about/page.js",
+  "/locations/page": "app/locations/page.js",
+  "/page": "app/page.js",
+  "/adventures/page": "app/adventures/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/_not-found/page": "app/_not-found/page.js"
+}
