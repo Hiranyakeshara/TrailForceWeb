@@ -1,6 +1,7 @@
-import { Box, Container, Typography, Stack,  Card, CardContent, Chip, Divider } from '@mui/material';
-import Grid from '@mui/material/GridLegacy';
+'use client';
+
 import { adventures } from '@/components/data';
+import { Box, Container, Typography, Stack, Grid, Card, CardContent, Chip, Divider } from '@mui/material';
 
 const scrollAnchorSx = { scrollMarginTop: { xs: 84, md: 94 } };
 
