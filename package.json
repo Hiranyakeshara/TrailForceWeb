@@ -9,23 +9,23 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "^15.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "@mui/material": "^7.3.8",
-    "@mui/icons-material": "^7.3.8",
-    "@mui/material-nextjs": "^7.3.8",
+    "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
-    "@emotion/cache": "^11.11.0",
-    "framer-motion": "^11.0.0"
+    "@mui/icons-material": "^7.3.8",
+    "@mui/material": "^7.3.8",
+    "@mui/material-nextjs": "^7.3.8",
+    "framer-motion": "^11.0.0",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.5.0",
-    "@types/node": "^20.0.0",
-    "@types/react": "^19.0.0",
+    "@types/node": "^20.19.35",
+    "@types/react": "^19.2.14",
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.0.0",
-    "eslint-config-next": "^15.0.0"
+    "eslint-config-next": "^15.0.0",
+    "typescript": "^5.9.3"
   }
 }
