@@ -1,20 +1,18 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { motion } from 'framer-motion';
-import Box, { BoxProps } from '@mui/material/Box';
+import { Box } from "@mui/material";
+import { motion } from "framer-motion";
 
-const MotionBox = motion(Box);
+const MotionBox = motion(Box as any);
 
-export default function Reveal(props: BoxProps & { delay?: number }) {
-  const { children, delay = 0, ...rest } = props;
+export default function Reveal({ children, delay = 0, ...rest }: any) {
   return (
     <MotionBox
       {...rest}
       initial={{ opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: 'easeOut', delay }}
-      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.6, ease: "easeOut", delay }}
+      viewport={{ once: true, amount: 0.2 }}
     >
       {children}
     </MotionBox>
