@@ -4,7 +4,7 @@ import { Container, Typography, Box } from '@mui/material';
 
 export default function AboutPage() {
   return (
-    <Container sx={{ py: { xs: 8, md: 10 } }}>
+    <Container sx={{ py: { xs: 8, md: 10 } }} >
       <Box sx={{ maxWidth: 900 }}>
         <Typography variant="h3" sx={{ fontWeight: 900, mb: 1.5 }}>
           About Trailforce
@@ -16,5 +16,6 @@ export default function AboutPage() {
         </Typography>
       </Box>
     </Container>
+ 
   );
 }
